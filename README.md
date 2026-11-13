@@ -1,3 +1,32 @@
+# TF2 Dungeon Mode (experiment)
+
+A fork of Valve's Source SDK 2013 (which includes the TF2 game code) where weapons are gone, players cast
+spells, and the game is PvE: clear floors of monsters, together.
+
+| Input | Spell |
+|---|---|
+| MOUSE1 | Fireball (0.6s cooldown) |
+| hold MOUSE2, release | Ka-me-ha-me-ha: charge up to 1.5s, piercing beam, up to 400 damage |
+| R | Lightning orb (10s cooldown) |
+| MOUSE3 | Overheal (15s cooldown) |
+
+- Players are forced onto RED. A director spawns floors of skeletons around the party; every 3rd floor
+  adds a boss (Skeleton King, Horseless Headless Horsemann, Monoculus, in rotation).
+- Clearing a floor revives fallen allies. A party wipe resets the run to floor 1. Spawn rooms are safe rooms:
+  monsters can't path into them.
+- Map objectives are disabled. No dungeon maps ship with TF2, so `cfg/mapcycle.txt` uses the Halloween maps.
+  Maps without a nav mesh get one generated automatically (the map reloads once).
+- Code: `src/game/server/tf/tf_dungeon.cpp` (spells + director), plus small hooks in `tf_player.cpp`
+  (no weapons, spell input), `tf_gamerules.cpp` (`tf_dungeon_mode`, no captures, precache),
+  `tf_weapon_spellbook.cpp` (fireball direct hits damage monsters), `tf_hud_crosshair.cpp` (weaponless crosshair).
+- ConVars: `tf_dungeon_mode`, `tf_dungeon_base_monsters`, `tf_dungeon_max_monsters`, `tf_dungeon_boss_every`,
+  `tf_dungeon_floor_delay`, `tf_dungeon_beam_damage`. Commands: `tf_dungeon_status`, `tf_dungeon_set_floor N` (cheat).
+
+**Build on NixOS:** `nix develop`, then `cd src && bash ./buildallprojects` (podman + the Steam Runtime sniper image).
+**Smoke test:** `tools/smoke_setup.sh` once (downloads dedicated-server content), then `python3 tools/smoke_test.py`.
+
+---
+
 # Source SDK 2013
 
 Source code for Source SDK 2013.

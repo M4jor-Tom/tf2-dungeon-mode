@@ -79,6 +79,10 @@ bool CHudTFCrosshair::ShouldDraw( void )
 
 		if ( pPlayer->IsTaunting() )
 			return false;
+
+		// Dungeon mode: no weapon to provide a crosshair, draw our own in Paint().
+		if ( !pPlayer->GetActiveWeapon() && pPlayer->IsAlive() )
+			return CHudElement::ShouldDraw();
 	}
 
 	if ( m_flTimeToHideUntil > gpGlobals->curtime )
@@ -142,6 +146,16 @@ void CHudTFCrosshair::FireGameEvent( IGameEvent * event )
 //-----------------------------------------------------------------------------
 void CHudTFCrosshair::Paint()
 {
+	C_TFPlayer *pLocal = C_TFPlayer::GetLocalTFPlayer();
+	if ( pLocal && !pLocal->GetActiveWeapon() )
+	{
+		int cx = ScreenWidth() / 2, cy = ScreenHeight() / 2;
+		vgui::surface()->DrawSetColor( 255, 255, 255, 220 );
+		vgui::surface()->DrawFilledRect( cx - 8, cy - 1, cx + 9, cy + 1 );
+		vgui::surface()->DrawFilledRect( cx - 1, cy - 8, cx + 1, cy + 9 );
+		return;
+	}
+
 	C_TFPlayer *pPlayer = C_TFPlayer::GetLocalTFPlayer();
 
 	if( !pPlayer )

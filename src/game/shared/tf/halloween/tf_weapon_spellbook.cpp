@@ -51,6 +51,7 @@
 	#include "tf_weapon_flamethrower.h"
 #endif
 
+extern ConVar tf_dungeon_mode;
 ConVar tf_test_spellindex( "tf_test_spellindex", "-1", FCVAR_CHEAT | FCVAR_REPLICATED, "Set to index to always get a specific spell" );
 #ifdef GAME_DLL
 ConVar tf_halloween_kart_rocketspell_speed( "tf_halloween_kart_rocketspell_speed", "1500", FCVAR_CHEAT );
@@ -1660,12 +1661,13 @@ public:
 						pBasePlayer = pPlayer;
 					}
 
-					if ( !pBasePlayer || !pPlayer || !pPlayer->IsAlive() )
+					// Dungeon mode: monsters (NPCs) take the direct hit too.
+					if ( !pBasePlayer || !pBasePlayer->IsAlive() || ( !pPlayer && !tf_dungeon_mode.GetBool() ) )
 						continue;
 
 					// Do a quick trace to see if there's any geometry in the way.
 					trace_t trace;
-					UTIL_TraceLine( vecOrigin, pPlayer->WorldSpaceCenter(), ( MASK_SHOT & ~( CONTENTS_HITBOX ) ), &traceFilter, &trace );
+					UTIL_TraceLine( vecOrigin, pBasePlayer->WorldSpaceCenter(), ( MASK_SHOT & ~( CONTENTS_HITBOX ) ), &traceFilter, &trace );
 					//debugoverlay->AddLineOverlay( vecOrigin, pPlayer->WorldSpaceCenter(), 255, 0, 0, false, 10 );
 					if ( trace.DidHitWorld() )
 						continue;

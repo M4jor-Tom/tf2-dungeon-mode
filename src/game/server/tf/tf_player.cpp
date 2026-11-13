@@ -2672,6 +2672,9 @@ void CTFPlayer::CancelEurekaTeleport()
 	m_teleportHomeFlashTimer.Invalidate();
 }
 
+extern ConVar tf_dungeon_mode;
+void TFDungeon_PlayerPostThink( CTFPlayer *pPlayer );
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -2687,6 +2690,11 @@ void CTFPlayer::PostThink()
 	m_angEyeAngles = EyeAngles();
 
     m_PlayerAnimState->Update( m_angEyeAngles[YAW], m_angEyeAngles[PITCH] );
+
+	if ( tf_dungeon_mode.GetBool() )
+	{
+		TFDungeon_PlayerPostThink( this );
+	}
 
 	if ( m_flTauntAttackTime && m_flTauntAttackTime < gpGlobals->curtime )
 	{
@@ -4232,6 +4240,14 @@ void CTFPlayer::GiveDefaultItems()
 	TFPlayerClassData_t *pData = m_PlayerClass.GetData();
 	if ( GetTeamNumber() == TEAM_SPECTATOR )
 	{
+		RemoveAllWeapons();
+		return;
+	}
+
+	// Dungeon mode: no weapons at all, players fight with spells (see tf_dungeon.cpp).
+	if ( tf_dungeon_mode.GetBool() )
+	{
+		RemoveAllAmmo();
 		RemoveAllWeapons();
 		return;
 	}

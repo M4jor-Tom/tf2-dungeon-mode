@@ -775,6 +775,7 @@ ConVar tf_force_holidays_off( "tf_force_holidays_off", "0", FCVAR_NOTIFY | FCVAR
 #endif // GAME_DLL
 );
 ConVar tf_birthday( "tf_birthday", "0", FCVAR_NOTIFY | FCVAR_REPLICATED );
+ConVar tf_dungeon_mode( "tf_dungeon_mode", "1", FCVAR_NOTIFY | FCVAR_REPLICATED, "Dungeon mode: no weapons, spells only, PvE floors of monsters." );
 ConVar tf_spells_enabled( "tf_spells_enabled", "0", FCVAR_NOTIFY | FCVAR_REPLICATED, "Enable to Allow Halloween Spells to be dropped and used by players" );
 
 ConVar tf_caplinear( "tf_caplinear", "1", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "If set to 1, teams must capture control points linearly." );
@@ -3590,6 +3591,14 @@ void CTFGameRules::Precache( void )
 		CGhost::PrecacheGhost();
 		CHeadlessHatman::PrecacheHeadlessHatman();
 		CMerasmus::PrecacheMerasmus();
+	}
+
+	// Dungeon monsters are spawned from code on any map.
+	if ( tf_dungeon_mode.GetBool() )
+	{
+		CZombie::PrecacheZombie();
+		CHeadlessHatman::PrecacheHeadlessHatman();
+		CEyeballBoss::PrecacheEyeballBoss();
 	}
 
 	if ( MapHasPrefix( STRING( gpGlobals->mapname ), "mvm_" ) )
@@ -22088,6 +22097,10 @@ void CTFGameRules::BalanceTeams( bool bRequireSwitcheesToBeDead )
 //-----------------------------------------------------------------------------
 bool CTFGameRules::PointsMayBeCaptured( void )
 {
+	// Dungeon mode: the map objective is scenery; clearing floors is the goal.
+	if ( tf_dungeon_mode.GetBool() )
+		return false;
+
 #ifdef GAME_DLL
 	if ( IsHolidayActive( kHoliday_Halloween ) && GetActiveBoss() )
 	{
