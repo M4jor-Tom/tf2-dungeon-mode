@@ -1,9 +1,8 @@
 name: Windows release
 
-# Every push to the branch builds the zip as an artifact. Push a tag like v0.1.0 to also publish a GitHub release.
+# Push a tag like v0.1.0 to publish a GitHub release. Run manually to just get the zip as a build artifact.
 on:
   push:
-    branches: [spike/dungeon-mode]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -35,9 +34,7 @@ jobs:
       - name: Package
         shell: pwsh
         run: |
-          # Tags name the zip; branch builds use the short commit hash (branch names can contain slashes).
-          $ver = if ("${{ github.ref_type }}" -eq "tag") { "${{ github.ref_name }}" } else { "${{ github.sha }}".Substring(0, 7) }
-          $name = "tf2-dungeon-mode-$ver-win64"
+          $name = "tf2-dungeon-mode-${{ github.ref_name }}-win64"
           $out = "dist\$name"
           New-Item -ItemType Directory -Force "$out\bin" | Out-Null
           Copy-Item -Recurse game\mod_tf "$out\mod_tf"
