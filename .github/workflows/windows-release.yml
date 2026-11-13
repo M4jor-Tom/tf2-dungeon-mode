@@ -42,10 +42,10 @@ jobs:
           New-Item -ItemType Directory -Force "$out\bin" | Out-Null
           Copy-Item -Recurse game\mod_tf "$out\mod_tf"
           Copy-Item -Recurse game\bin\x64 "$out\bin\x64"
-          Copy-Item game\mod_tf.exe, game\thirdpartylegalnotices.txt, README.md "$out\"
+          Copy-Item game\mod_tf_win64.exe, game\thirdpartylegalnotices.txt, README.md "$out\"
           Get-ChildItem -Recurse "$out" -Include *.pdb, *.map | Remove-Item
           Get-ChildItem -Recurse "$out\mod_tf\bin" -Filter linux64 -Directory | Remove-Item -Recurse
-          foreach ($f in "mod_tf.exe", "mod_tf\bin\x64\client.dll", "mod_tf\bin\x64\server.dll") {
+          foreach ($f in "mod_tf_win64.exe", "mod_tf\bin\x64\client.dll", "mod_tf\bin\x64\server.dll") {
             if (-not (Test-Path "$out\$f")) { throw "missing build output: $f" }
           }
           Compress-Archive -Path "$out\*" -DestinationPath "dist\$name.zip"
@@ -65,4 +65,4 @@ jobs:
             TF2 Dungeon Mode, Windows x64 build.
 
             Requires Team Fortress 2 and "Source SDK Base 2013 Multiplayer" installed through Steam.
-            Unzip into a folder, then run `mod_tf.exe` (or copy `mod_tf` into `Steam/steamapps/sourcemods/`).
+            Unzip into a folder, then run `mod_tf_win64.exe` (or copy `mod_tf` into `Steam/steamapps/sourcemods/`).
